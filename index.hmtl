@@ -1,1 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nolen Kooistra | About</title>
+  <style>
+    :root {
+      font-family: Arial, sans-serif;
+      color: #222;
+      background: #f7f7f7;
+    }
 
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+    }
+
+    header {
+      padding: 4rem 1.5rem;
+      color: #fff;
+      text-align: center;
+      background: #c8102e;
+    }
+
+    header h1 {
+      margin: 0 0 0.75rem;
+      font-size: clamp(2.25rem, 6vw, 4rem);
+    }
+
+    header p {
+      margin: 0;
+      font-size: 1.25rem;
+    }
+
+    nav {
+      background: #fff;
+      border-bottom: 1px solid #ddd;
+    }
+
+    nav ul {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin: 0;
+      padding: 1rem;
+      list-style: none;
+    }
+
+    nav a {
+      color: #c8102e;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    nav a:hover,
+    nav a:focus {
+      text-decoration: underline;
+    }
+
+    main {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Nolen Kooistra</h1>
+    <p>English Student at Indiana University</p>
+  </header>
+
+  <nav aria-label="Main navigation">
+    <ul>
+      <li><a href="index.hmtl" aria-current="page">About</a></li>
+    </ul>
+  </nav>
+
+  <main id="about">
+    <h2>About</h2>
+    <p>Welcome to my personal website.</p>
+  </main>
+</body>
+</html>
