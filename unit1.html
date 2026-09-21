@@ -77,12 +77,82 @@
       color: #c8102e;
     }
 
+    .document-pages {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0 2rem;
+    }
+
+    .document-page {
+      width: 100%;
+      padding: 0;
+      border: 1px solid #ddd;
+      background: #fff;
+      cursor: zoom-in;
+      box-shadow: 0 2px 6px rgb(0 0 0 / 10%);
+    }
+
+    .document-page:hover,
+    .document-page:focus {
+      border-color: #c8102e;
+      outline: 3px solid rgb(200 16 46 / 20%);
+    }
+
+    .document-page canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
     section p {
       min-height: 8rem;
       margin-bottom: 1.5rem;
       padding: 1rem;
       border: 1px solid #ddd;
       background: #fff;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 10;
+      inset: 0;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      background: rgb(0 0 0 / 80%);
+      cursor: zoom-out;
+    }
+
+    .modal.is-open {
+      display: flex;
+    }
+
+    .modal canvas {
+      max-width: 95vw;
+      max-height: 90vh;
+      width: auto;
+      height: auto;
+      background: #fff;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1.5rem;
+      color: #fff;
+      font-size: 2rem;
+      line-height: 1;
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+    }
+
+    @media (max-width: 600px) {
+      .document-pages {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -104,10 +174,80 @@
 
     <section aria-labelledby="blog-title">
       <h2 id="blog-title">Blog: High of Cellphones in Teens</h2>
+
+      <div class="document-pages" aria-label="Project 1 pre-writing pages">
+        <button class="document-page" type="button" data-page="1" aria-label="Open Project 1 Pre-Writing page 1 larger">
+          <canvas id="page-1"></canvas>
+        </button>
+        <button class="document-page" type="button" data-page="2" aria-label="Open Project 1 Pre-Writing page 2 larger">
+          <canvas id="page-2"></canvas>
+        </button>
+      </div>
+
       <p>&nbsp;</p>
       <p>&nbsp;</p>
       <p>&nbsp;</p>
     </section>
   </main>
+
+  <div class="modal" id="page-modal" role="dialog" aria-modal="true" aria-label="Enlarged document page">
+    <button class="modal-close" type="button" aria-label="Close enlarged page">&times;</button>
+    <canvas id="enlarged-page"></canvas>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs" type="module"></script>
+  <script type="module">
+    import * as pdfjsLib from 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs';
+
+    const pdfUrl = 'Project%201%20Pre-Writing%20%20(1).pdf';
+    const documentPages = document.querySelectorAll('.document-page');
+    const modal = document.querySelector('#page-modal');
+    const enlargedPage = document.querySelector('#enlarged-page');
+    const closeButton = document.querySelector('.modal-close');
+    let pdf;
+
+    async function renderPage(pageNumber, canvas, scale = 1) {
+      const page = await pdf.getPage(pageNumber);
+      const viewport = page.getViewport({ scale });
+      const context = canvas.getContext('2d');
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      await page.render({ canvasContext: context, viewport }).promise;
+    }
+
+    async function loadPdf() {
+      pdf = await pdfjsLib.getDocument(pdfUrl).promise;
+      const pageCount = Math.min(pdf.numPages, 2);
+      for (let pageNumber = 1; pageNumber <= pageCount; pageNumber += 1) {
+        const canvas = document.querySelector(`#page-${pageNumber}`);
+        await renderPage(pageNumber, canvas, 1.2);
+      }
+    }
+
+    documentPages.forEach((documentPage) => {
+      documentPage.addEventListener('click', async () => {
+        const pageNumber = Number(documentPage.dataset.page);
+        await renderPage(pageNumber, enlargedPage, 2);
+        modal.classList.add('is-open');
+        closeButton.focus();
+      });
+    });
+
+    function closeModal() {
+      modal.classList.remove('is-open');
+    }
+
+    closeButton.addEventListener('click', closeModal);
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') closeModal();
+    });
+
+    loadPdf().catch((error) => {
+      console.error('Unable to display the PDF pages.', error);
+    });
+  </script>
 </body>
 </html>
